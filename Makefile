@@ -24,6 +24,7 @@ ds: logo
 
 ## Muestra estado de contenedores orquestado con docker-compose
 dc-ps: logo
+<<<<<<< HEAD
 	docker-compose ps
 
 ## Detiene todos los contenedores orquestado con docker-compose
@@ -35,3 +36,6 @@ inicio: logo
 	docker-compose build --no-cache
 	sudo chmod u=rwx,g=rwx,o=rwx airflow/logs
 	sudo chown -R 5050:5050 pgadmin
+=======
+	docker-compose ps
+>>>>>>> a1db1fed55ce2cc12cc29bd64f6dd91dbd9acf2c
