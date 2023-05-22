@@ -33,9 +33,10 @@ dc-down: logo
 
 ## Construir contenedores y corregir problemas de permisos de acceso a carpetas de la infraestructura
 inicio: logo
+	docker-compose down
 	docker-compose build --no-cache
 	docker-compose up -d
 	docker-compose down
-	sudo chmod u=rwx,g=rwx,o=rwx airflow
+	sudo chmod -R u=rwx,g=rwx,o=rwx airflow
 	mkdir -p pgadmin
 	sudo chown -R 5050:5050 pgadmin
