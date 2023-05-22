@@ -81,26 +81,66 @@ This project contains the following containers:
 ## Estructura de archivos
 
 ```bash
+sisprot-online
 ├── airflow
-│   ├── dags
-│   │   ├── parse_uniprot_xml.py
-|   |   ├── uniprot_data_pipeline.py
-│   ├── Dockerfile
-│   ├── entrypoint.sh
-│   └── requirements.txt
+│   ├── dags
+│   │   ├── parse_uniprot_xml.py
+│   │   ├── Q9Y261.xml
+│   │   └── uniprot_data_pipeline.py
+│   ├── logs
+│   │   ├── dag_processor_manager
+│   │   └── scheduler
+│   ├── plugins
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   └── requirements.txt
+├── config
+│   └── pgadmin.env
 ├── data
+│   ├── architecture.png
+│   ├── architecture_small.png
+│   └── Q9Y261.xml
 ├── fastapi
-│   │   ├── app.py
-|   |   ├── Dockerfile
-|   |   ├── requirements.txt
+│   ├── __pycache__
+│   │   ├── app.cpython-310.pyc
+│   │   ├── app.cpython-39.pyc
+│   │   └── gunicorn_conf.cpython-39.pyc
+│   ├── sisprot
+│   │   ├── models
+│   │   ├── __pycache__
+│   │   ├── routes
+│   │   ├── schemas
+│   │   ├── tasks
+│   │   ├── auth.py
+│   │   ├── db.py
+│   │   ├── __init__.py
+│   │   ├── messages.py
+│   │   ├── pagination.py
+│   │   ├── roles.py
+│   │   └── utils.py
+│   ├── app.py
+│   ├── Dockerfile
+│   ├── _.env
+│   └── requirements.txt
 ├── logs
 ├── minio
-│   │   ├── Dockerfile
-|   |   ├── requirements.txt
-|   |   ├── setup.sh
-└── docker-compose.yml
-└── README.md
-└── TODO
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── setup.sh
+├── pgadmin
+│   ├── docker_pgadmin_servers.json
+│   └── pgadmin
+│       ├── azurecredentialcache
+│       ├── sessions
+│       ├── storage
+│       └── pgadmin4.db
+├── postgresql
+│   └── data
+├── venv
+│   ├── bin
+├── docker-compose.yml
+├── Makefile
+├── README.md
 ```
 
 ## Arquitectura de componentes
@@ -136,18 +176,22 @@ Un inicio modo background:
 ### Credenciales de acceso:
 
 | Applicación | URL                                                          | Credenciales                          |     |
-| ----------- |--------------------------------------------------------------|---------------------------------------| --- |
+| ----------- | ------------------------------------------------------------ | ------------------------------------- | --- |
 | Airflow     | [http://localhost:8080](http://localhost:8080)               | ` User: admin` <br> ` Pass: admin`    |     |
 | Neo4j       | **Database:** [http://localhost:7474](http://localhost:7474) | ` User: neo4j` <br> ` Pass: password` |     |
 | MinIO       | [http://localhost:9000](http://localhost:9000)               | ` User: admin` <br> ` Pass: password` |     |
 | FastAPI     | [http://localhost:8000/docs](http://localhost:8000/redoc)    |                                       |     |
 
 ### Problemas conocidos:
-#### airflow: 
+
+#### airflow:
+
 Problemas de permiso de escritura en la carpeta logs.
 Se soluciona con:
 `sudo chmod u=rwx,g=rwx,o=rwx logs`
+
 #### pgadmin4:
+
 Problema de permisos de escritura en la carpeta "pgadmin"
 Se soluciona con:
 `sudo chown -R 5050:5050 pgadmin`
