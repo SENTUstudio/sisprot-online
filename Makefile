@@ -3,6 +3,7 @@
 .DEFAULT_GOAL := help
 
 logo:
+	clear
 	@echo "┌──────────────────────────────────────────────┐"
 	@echo "│ ███████╗███████╗███╗   ██╗████████╗██╗   ██╗ │"
 	@echo "│ ██╔════╝██╔════╝████╗  ██║╚══██╔══╝██║   ██║ │"
@@ -33,6 +34,8 @@ dc-down: logo
 ## Construir contenedores y corregir problemas de permisos de acceso a carpetas de la infraestructura
 inicio: logo
 	docker-compose build --no-cache
-	sudo chmod u=rwx,g=rwx,o=rwx airflow/logs
-	mkdir pgadmin
+	docker-compose up -d
+	docker-compose down
+	sudo chmod u=rwx,g=rwx,o=rwx airflow
+	mkdir -p pgadmin
 	sudo chown -R 5050:5050 pgadmin
