@@ -34,4 +34,5 @@ dc-down: logo
 inicio: logo
 	docker-compose build --no-cache
 	sudo chmod u=rwx,g=rwx,o=rwx airflow/logs
+	mkdir pgadmin
 	sudo chown -R 5050:5050 pgadmin
