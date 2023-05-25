@@ -1,15 +1,15 @@
-import logging
-import smtplib
-import ssl
-
+import logging, smtplib, ssl
+import base64
+import time
+from fastapi import APIRouter, Depends, HTTPException, status
 import requests
-from fastapi import APIRouter, Depends, HTTPException
-
-from sisprot.auth import jwt_required
 from sisprot.db import get_db
+from sisprot.auth import jwt_required, get_current_user
 from sisprot.models import ProspectosResidenciales, PlantillaMensaje
-from sisprot.schemas import ProspectoResidencialesInSchema
+from sisprot.schemas import ProspectosResidencialesInSchema
 from sisprot.utils import config, Default
+from sisprot.files import static_path, save_static_file
+
 
 router = APIRouter(prefix="/api")
 
@@ -77,12 +77,17 @@ Sisprot Global Fiber c.a
 """
 
 
-@router.get("/prospectos-residenciales", dependencies=[Depends(jwt_required)], tags=["prospectos-residenciales"])
+@router.get(
+    "/prospectos-residenciales",
+    dependencies=[Depends(jwt_required)],
+    tags=["Prospectos Residenciales"],
+)
 def index(page: int = 1, session=Depends(get_db)):
     """
     Devuelve una lista paginada de Clientes importados
     """
     with session:
+
         stmt = session.query(ProspectosResidenciales)
 
         results = stmt.paginate(page=page).as_dict()
@@ -90,9 +95,11 @@ def index(page: int = 1, session=Depends(get_db)):
 
 
 @router.put(
-    "/prospectos-residenciales/{id}", dependencies=[Depends(jwt_required)], tags=["prospectos-residenciales"]
+    "/prospectos-residenciales/{id}",
+    dependencies=[Depends(jwt_required)],
+    tags=["Prospectos Residenciales"],
 )
-def edit(id: int, data: ProspectoResidencialesInSchema, session=Depends(get_db)):
+def edit(id: int, data: ProspectosResidencialesInSchema, session=Depends(get_db)):
     data = data.dict(exclude_none=True)
     item = session.query(ProspectosResidenciales).filter_by(id=id).first()
 
@@ -104,7 +111,9 @@ def edit(id: int, data: ProspectoResidencialesInSchema, session=Depends(get_db))
 
 
 @router.delete(
-    "/prospectos-residenciales/{id}", dependencies=[Depends(jwt_required)], tags=["prospectos-residenciales"]
+    "/prospectos-residenciales/{id}",
+    dependencies=[Depends(jwt_required)],
+    tags=["Prospectos Residenciales"],
 )
 def delete(id: int, session=Depends(get_db)):
     item = session.query(ProspectosResidenciales).filter_by(id=id).first()
@@ -116,14 +125,35 @@ def delete(id: int, session=Depends(get_db)):
     session.commit()
 
 
-@router.post("/prospectos-residenciales", tags=["prospectos-residenciales"])
-def create(data: ProspectoResidencialesInSchema, session=Depends(get_db)):
+@router.post("/prospectos-residenciales", tags=["Prospectos Residenciales"])
+def create(data: ProspectosResidencialesInSchema, session=Depends(get_db)):
     """
     Crea un prospecto, posteriormente envia un mensaje por Whatsapp con
     los datos del prospecto, tambien envia los datos via api de OZMAP
     """
 
-    item = ProspectosResidenciales(**data.dict())
+    item = ProspectosResidenciales(**data.dict(exclude={"foto_cedula", "foto_rif"}))
+
+    try:
+        filename = data.foto_cedula[0]
+        image_as_bytes = str.encode(data.foto_cedula[1])  # convert string to bytes
+        img_recovered = base64.b64decode(image_as_bytes)  # decode base64string
+        file_ext = filename.split(".")[-1]
+        random_filename = f"cedula_{data.cedula}_{time.time()}.{file_ext}"
+        item.foto_cedula = random_filename
+        save_static_file(f"prospectos/{random_filename}", img_recovered)
+
+        filename = data.foto_rif[0]
+        image_as_bytes = str.encode(data.foto_rif[1])  # convert string to bytes
+        img_recovered = base64.b64decode(image_as_bytes)  # decode base64string
+        file_ext = filename.split(".")[-1]
+        random_filename = f"rif_{data.cedula}_{time.time()}.{file_ext}"
+        item.foto_rif = random_filename
+        save_static_file(f"prospectos/{random_filename}", img_recovered)
+
+    except Exception:
+        logging.exception("error uploading image")
+        return {"message": "There was an error uploading the file"}
 
     if data.barrio_localidad == "otro":
         item.otro_barrio_localidad = data.otro_barrio_localidad
@@ -175,7 +205,10 @@ def create(data: ProspectoResidencialesInSchema, session=Depends(get_db)):
         payload = {
             "phone": f"+{data.telefono}",
             "message": factibilidad_plantilla_user.mensaje.format_map(
-                Default(nombre_cliente=data.nombre_completo, barrio_localidad=barrio_localidad)
+                Default(
+                    nombre_cliente=data.nombre_completo,
+                    barrio_localidad=barrio_localidad,
+                )
             ),
         }
 

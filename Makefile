@@ -40,3 +40,5 @@ inicio: logo
 	sudo chmod -R u=rwx,g=rwx,o=rwx airflow
 	mkdir -p pgadmin
 	sudo chown -R 5050:5050 pgadmin
+
+## TODO: Falta agregar rutina de restauración del backup de la base de datos

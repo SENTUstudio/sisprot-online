@@ -1,18 +1,19 @@
 from datetime import datetime
-
 from sqlalchemy import (
     DateTime,
+    ForeignKey,
     Column,
     Integer,
     Text,
     String,
     Date,
+    Boolean,
     Float,
-    ForeignKey
+    JSON,
+    ForeignKey,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-
+from sqlalchemy.dialects.postgresql import ARRAY
 from sisprot.db import BaseModel
 from .auth import UserAuth
 
@@ -83,17 +84,15 @@ class Cliente(BaseModel):
     router = Column(String(100))
     estado_facturacion = Column(String(200))
     clave_6d = Column(String(300))
-    country = relationship(
-        "Pais", primaryjoin="foreign(Cliente.pais) == Pais.nombre"
-    )
+    country = relationship("Pais", primaryjoin="foreign(Cliente.pais) == Pais.nombre")
 
-    id_plan = Column(Integer, ForeignKey('planes.id'))
+    id_plan = Column(Integer, ForeignKey("planes.id"))
     plan = relationship("Plan")
 
-    id_tipo_cliente = Column(Integer, ForeignKey('tipo_cliente.id'))
+    id_tipo_cliente = Column(Integer, ForeignKey("tipo_cliente.id"))
     tipo_cliente = relationship("TipoCliente")
 
-    id_estado_cliente = Column(Integer, ForeignKey('estado_cliente.id'))
+    id_estado_cliente = Column(Integer, ForeignKey("estado_cliente.id"))
     estado_cliente = relationship("EstadoCliente")
 
     def update(self, **kwargs):
@@ -140,7 +139,7 @@ class Plan(BaseModel):
     descripcion = Column(Text)
     lote = Column(Integer, default=1)
     recarga_por_mora = Column(Integer)
-    id_plan_conf_avanzado = Column(Integer, ForeignKey('plan_conf_avanzado.id'))
+    id_plan_conf_avanzado = Column(Integer, ForeignKey("plan_conf_avanzado.id"))
     plan_conf_avanzado = relationship("PlanConfAvanzado")
 
     def update(self, **kwargs):
@@ -268,11 +267,17 @@ class ProspectosResidenciales(BaseModel):
     direccion_completa = Column(String(300))
     barrio_localidad = Column(String(300))
     plan_tentativo = Column(String(300))
-    coordenadas = Column(String(300))
     municipio = Column(String(300))
     otro_barrio_localidad = Column(String(300))
     latitud = Column(String(300))
     longitud = Column(String(300))
+    fecha_nacimiento = Column(Date)
+    sexo = Column(String(50))
+    foto_cedula = Column(String(200))
+    foto_rif = Column(String(200))
+    estado_vivienda = Column(String(300))
+    parroquia = Column(String(300))
+    fecha_hora_registro_sistema = Column(Date)
 
 
 class ProspectosPymes(BaseModel):
@@ -281,16 +286,24 @@ class ProspectosPymes(BaseModel):
     nombre_completo = Column(String(300))
     apellido_completo = Column(String(300))
     cedula = Column(String(300))
+    nombre_o_razon_social = Column(String(300))
+    rif = Column(String(50))
     email = Column(String(300))
     telefono = Column(String(300))
     direccion_completa = Column(String(300))
     barrio_localidad = Column(String(300))
     plan_tentativo = Column(String(300))
-    coordenadas = Column(String(300))
     municipio = Column(String(300))
     otro_barrio_localidad = Column(String(300))
     latitud = Column(String(300))
     longitud = Column(String(300))
+    fecha_nacimiento = Column(Date)
+    sexo = Column(String(50))
+    foto_cedula = Column(String(200))
+    foto_rif = Column(String(200))
+    estado_vivienda = Column(String(300))
+    parroquia = Column(String(300))
+    fecha_hora_registro_sistema = Column(Date)
 
 
 class ReporteFalla(BaseModel):

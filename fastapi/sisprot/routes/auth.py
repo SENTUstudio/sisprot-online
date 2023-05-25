@@ -1,12 +1,11 @@
 from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_another_jwt_auth import AuthJWT
-
-from sisprot.db import get_db
-from sisprot.models import UserAuth, Cliente
 from sisprot.schemas import UserAuthScheme, UserAuthOutScheme
+from sisprot.models import UserAuth, Cliente
+from sisprot.db import get_db
 from sisprot.utils import row2dict
+from sisprot.auth import user_has_permissions
 
 router = APIRouter(prefix="/api")
 
@@ -17,8 +16,8 @@ router = APIRouter(prefix="/api")
     tags=["auth"],
     response_model=UserAuthOutScheme,
 )
-async def login_auth(
-        data: UserAuthScheme, session=Depends(get_db), Authorize: AuthJWT = Depends()
+def login_auth(
+    data: UserAuthScheme, session=Depends(get_db), Authorize: AuthJWT = Depends()
 ):
     """
     Ingresa un usuario al sistema.
@@ -38,7 +37,7 @@ async def login_auth(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad username or password"
         )
-
+    
     user_claims = {
         "scopes": "admin"
     }
@@ -70,7 +69,7 @@ def verify_token(Authorize: AuthJWT = Depends(), session=Depends(get_db)):
     response_model=UserAuthOutScheme,
 )
 def authorize(
-        data: UserAuthScheme, session=Depends(get_db), Authorize: AuthJWT = Depends()
+    data: UserAuthScheme, session=Depends(get_db), Authorize: AuthJWT = Depends()
 ):
     """
     Ingresa un usuario al sistema.
@@ -103,7 +102,7 @@ def authorize(
     # response_model=UserAuthOutScheme,
 )
 def login_auth_cliente(
-        data: UserAuthScheme, session=Depends(get_db), Authorize: AuthJWT = Depends()
+    data: UserAuthScheme, session=Depends(get_db), Authorize: AuthJWT = Depends()
 ):
     """
     Ingresa un usuario al sistema.
@@ -111,7 +110,7 @@ def login_auth_cliente(
     - **username**: Usuario
     - **password**: Contraseña
     """
-
+    
     user = session.query(Cliente).filter_by(dni_cedula=data.username).first()
 
     if not user:
@@ -123,7 +122,7 @@ def login_auth_cliente(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad username or password"
         )
-
+    
     user_claims = {
         "scopes": "cliente"
     }

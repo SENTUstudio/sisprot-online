@@ -1,11 +1,11 @@
-from datetime import datetime, date
+from fastapi import Form
+from pydantic import BaseModel, ValidationError, validator
 from typing import List, TypeVar, Generic, Optional, Union
-
-from pydantic import BaseModel
-from pydantic import Field, validator, create_model
+from pydantic import confloat, Field, validator, create_model
 from pydantic.generics import GenericModel
+from datetime import date, datetime
 from sqlalchemy.orm import Query
-
+from datetime import datetime, date
 from sisprot.models import ReporteFalla
 
 
@@ -249,13 +249,13 @@ class UpdateConfigKeySchema(BaseModel):
 
 class FilterMessageSchema(BaseModel):
     router: Optional[List[str]] = None
-    status: Optional[List[int]] = None,
-    barrio_localidad: Optional[List[str]] = None,
-    router: Optional[List[str]] = None,
-    plan: Optional[List[str]] = None,
-    estado_facturacion: Optional[List[str]] = None,
-    precio_plan: Optional[List[float]] = None,
-    tipo_cliente: Optional[List[int]] = None,
+    status: Optional[List[int]] = (None,)
+    barrio_localidad: Optional[List[str]] = (None,)
+    router: Optional[List[str]] = (None,)
+    plan: Optional[List[str]] = (None,)
+    estado_facturacion: Optional[List[str]] = (None,)
+    precio_plan: Optional[List[float]] = (None,)
+    tipo_cliente: Optional[List[int]] = (None,)
 
 
 class MessageSchema(BaseModel):
@@ -353,7 +353,7 @@ class PlanCreateSchema(BaseModel):
     plan: PlanInSchema
 
 
-class ProspectoResidencialesInSchema(BaseModel):
+class ProspectosResidencialesInSchema(BaseModel):
     nombre_completo: str
     apellido_completo: str
     cedula: str
@@ -362,27 +362,53 @@ class ProspectoResidencialesInSchema(BaseModel):
     direccion_completa: str
     barrio_localidad: str
     plan_tentativo: str
-    coordenadas: Optional[str]
     municipio: Optional[str]
     otro_barrio_localidad: Optional[str]
     latitud: Optional[str]
     longitud: Optional[str]
+    foto_cedula: Optional[list]
+    foto_rif: Optional[list]
+    fecha_nacimiento: date
+    sexo: str
+    estado_vivienda: str
+    parroquia: str
+    fecha_hora_registro_sistema: datetime
+
+    @validator("sexo")
+    def validate_sexo(cls, v):
+        if v is not None and v in ["hombre", "mujer"]:
+            return v
+        raise ValueError("sex undefined")
 
 
-class ProspectoPymesInSchema(BaseModel):
+class ProspectosPymesInSchema(BaseModel):
     nombre_completo: str
     apellido_completo: str
     cedula: str
+    nombre_o_razon_social: str
+    rif: str
     email: str
     telefono: str
     direccion_completa: str
     barrio_localidad: str
     plan_tentativo: str
-    coordenadas: Optional[str]
     municipio: Optional[str]
     otro_barrio_localidad: Optional[str]
     latitud: Optional[str]
     longitud: Optional[str]
+    foto_cedula: Optional[list]
+    foto_rif: Optional[list]
+    fecha_nacimiento: date
+    sexo: str
+    estado_vivienda: str
+    parroquia: str
+    fecha_hora_registro_sistema: datetime
+
+    @validator("sexo")
+    def validate_sexo(cls, v):
+        if v is not None and v in ["hombre", "mujer"]:
+            return v
+        raise ValueError("sex undefined")
 
 
 class ReporteFallaInSchema(BaseModel):
