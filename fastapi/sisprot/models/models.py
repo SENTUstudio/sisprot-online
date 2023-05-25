@@ -1,19 +1,18 @@
 from datetime import datetime
+
 from sqlalchemy import (
     DateTime,
-    ForeignKey,
     Column,
     Integer,
     Text,
     String,
     Date,
-    Boolean,
     Float,
-    JSON,
     ForeignKey,
 )
-from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import relationship
+
 from sisprot.db import BaseModel
 from .auth import UserAuth
 
@@ -358,3 +357,40 @@ class CarteraCliente(BaseModel):
     nombre = Column(String(100))
     tipo = Column(String(100))
     estado = Column(String(100))
+
+
+class Estados(BaseModel):
+    __tablename__ = "estados"
+    id = Column(Integer, primary_key=True)
+    desc_estado = Column(Text)
+    estado = Column(Text)
+
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+
+class Municipios(BaseModel):
+    __tablename__ = "municipios"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    cod_municipio = Column(Integer)  # usuario
+    desc_municipio = Column(Text)  # nombre
+    id_estado = Column(Integer, ForeignKey("estados.id"))
+
+
+class Parroquias(BaseModel):
+    __tablename__ = "parroquias"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    cod_parroquia = Column(Integer)  # usuario
+    desc_parroquia = Column(Text)  # nombre
+    siglas = Column(Text)  # nombre
+    id_estado = Column(Integer, ForeignKey("estados.id"))
+    id_municipio = Column(Integer, ForeignKey("municipios.id"))
+
+
+class Comunidades(BaseModel):
+    __tablename__ = "comunidades"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    desc_cominidad = Column(Text)  # nombre
+    id_parroquia = Column(Integer, ForeignKey("parroquias.id"))

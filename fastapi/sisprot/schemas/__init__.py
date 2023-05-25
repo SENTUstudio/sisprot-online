@@ -1,11 +1,11 @@
-from fastapi import Form
-from pydantic import BaseModel, ValidationError, validator
-from typing import List, TypeVar, Generic, Optional, Union
-from pydantic import confloat, Field, validator, create_model
-from pydantic.generics import GenericModel
-from datetime import date, datetime
-from sqlalchemy.orm import Query
 from datetime import datetime, date
+from typing import List, TypeVar, Generic, Optional, Union
+
+from pydantic import BaseModel
+from pydantic import Field, validator, create_model
+from pydantic.generics import GenericModel
+from sqlalchemy.orm import Query
+
 from sisprot.models import ReporteFalla
 
 
@@ -508,3 +508,31 @@ class RolOutSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class EstadosInSchema(BaseModel):
+    id: int
+    desc_estado: str
+    estado: str
+
+
+class MunicipiosInSchema(BaseModel):
+    id: int
+    cod_municipio: int
+    desc_municipio: str
+    id_estado: str
+
+
+class ParroquiasInSchema(BaseModel):
+    id: int
+    cod_parroquia: int
+    desc_parroquia: str
+    siglas: str
+    id_estado: int
+    id_municipio: int
+
+
+class ComunidadesInSchema(BaseModel):
+    id: int
+    desc_cominidad: str
+    id_parroquia: int
