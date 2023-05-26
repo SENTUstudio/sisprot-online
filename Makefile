@@ -21,7 +21,7 @@ help: logo
 
 ## Detiene, Construye y reinicia servicio de docker-compose
 ds: logo
-	docker-compose down && docker-compose build --no-cache && docker-compose up -d
+	docker-compose down && docker-compose build && docker-compose up -d
 
 ## Muestra estado de contenedores orquestado con docker-compose
 dc-ps: logo

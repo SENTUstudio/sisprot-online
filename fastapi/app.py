@@ -29,7 +29,8 @@ from sisprot.routes import (
     prospectos_pymes,
     reporte_fallas,
     users,
-    carteras
+    carteras,
+    entidades
 )
 
 app = FastAPI()
@@ -63,6 +64,7 @@ app.include_router(prospectos_pymes.router)
 app.include_router(reporte_fallas.router)
 app.include_router(users.router)
 app.include_router(carteras.router)
+app.include_router(entidades.router)
 
 
 @AuthJWT.load_config
