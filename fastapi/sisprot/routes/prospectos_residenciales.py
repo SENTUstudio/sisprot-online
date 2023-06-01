@@ -87,7 +87,6 @@ def index(page: int = 1, session=Depends(get_db)):
     Devuelve una lista paginada de Clientes importados
     """
     with session:
-
         stmt = session.query(ProspectosResidenciales)
 
         results = stmt.paginate(page=page).as_dict()

@@ -10,6 +10,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
 )
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
@@ -276,7 +277,7 @@ class ProspectosResidenciales(BaseModel):
     foto_rif = Column(String(200))
     estado_vivienda = Column(String(300))
     parroquia = Column(String(300))
-    fecha_hora_registro_sistema = Column(Date)
+    fecha_hora_registro_sistema = Column(Date, nullable=True, server_default=func.now())
 
 
 class ProspectosPymes(BaseModel):
@@ -302,7 +303,9 @@ class ProspectosPymes(BaseModel):
     foto_rif = Column(String(200))
     estado_vivienda = Column(String(300))
     parroquia = Column(String(300))
-    fecha_hora_registro_sistema = Column(Date)
+    fecha_hora_registro_sistema = Column(
+        DateTime, nullable=True, server_default=func.now()
+    )
 
 
 class ReporteFalla(BaseModel):

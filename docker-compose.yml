@@ -42,7 +42,7 @@ services:
     command: server /data --console-address ":9001"
     ports:
       - '9000:9000'
-      - '9001:9001'
+      - '9002:9001'
     volumes:
       - data:/data
     environment:
@@ -104,7 +104,6 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
     user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
     restart: "always"
-
 
   fastapi:
     build: ./fastapi

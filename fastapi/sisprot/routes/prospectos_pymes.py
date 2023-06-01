@@ -1,3 +1,4 @@
+from datetime import datetime, date, time
 import logging, smtplib, ssl
 import base64
 import time
@@ -87,7 +88,6 @@ def index(page: int = 1, session=Depends(get_db)):
     Devuelve una lista paginada de Clientes importados
     """
     with session:
-
         stmt = session.query(ProspectosPymes)
 
         results = stmt.paginate(page=page).as_dict()
@@ -131,6 +131,8 @@ def create(data: ProspectosPymesInSchema, session=Depends(get_db)):
     Crea un prospecto, posteriormente envia un mensaje por Whatsapp con
     los datos del prospecto, tambien envia los datos via api de OZMAP
     """
+
+    # now = datetime.now().time()
 
     item = ProspectosPymes(**data.dict(exclude={"foto_cedula", "foto_rif"}))
 

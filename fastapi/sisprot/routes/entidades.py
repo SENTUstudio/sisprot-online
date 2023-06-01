@@ -11,7 +11,7 @@ def lista_estados(page: int = 1, q: str = None, session=Depends(get_db)):
     """
     Devuelve una lista de los Estados de la Nación
     """
-    results = session.query(Estados).paginate(page=page).as_dict()
+    results = session.query(Estados).all()
     return results
 
 
@@ -20,7 +20,7 @@ def lista_municipios(page: int = 1, q: str = None, session=Depends(get_db)):
     """
     Devuelve una lista de los municipios de la Nación
     """
-    results = session.query(Municipios).paginate(page=page).as_dict()
+    results = session.query(Municipios).all()
     return results
 
 
@@ -38,7 +38,7 @@ def lista_parroquias(page: int = 1, q: str = None, session=Depends(get_db)):
     """
     Devuelve una lista de las parroquias de la Nación
     """
-    results = session.query(Parroquias).paginate(page=page).as_dict()
+    results = session.query(Parroquias).all()
     return results
 
 
@@ -56,7 +56,7 @@ def lista_comunidades(page: int = 1, q: str = None, session=Depends(get_db)):
     """
     Devuelve una lista de las comunidades de la Nación
     """
-    results = session.query(Comunidades).paginate(page=page).as_dict()
+    results = session.query(Comunidades).all()
     return results
 
 
