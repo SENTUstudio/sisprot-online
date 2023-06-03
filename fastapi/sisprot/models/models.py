@@ -277,6 +277,11 @@ class ProspectosResidenciales(BaseModel):
     foto_rif = Column(String(200))
     estado_vivienda = Column(String(300))
     parroquia = Column(String(300))
+    sms = Column(String(50))
+    whatsapp = Column(String(50))
+    twitter = Column(String(50))
+    facebook = Column(String(50))
+    instagram = Column(String(50))
     fecha_hora_registro_sistema = Column(Date, nullable=True, server_default=func.now())
 
 
@@ -303,6 +308,11 @@ class ProspectosPymes(BaseModel):
     foto_rif = Column(String(200))
     estado_vivienda = Column(String(300))
     parroquia = Column(String(300))
+    sms = Column(String(50))
+    whatsapp = Column(String(50))
+    twitter = Column(String(50))
+    facebook = Column(String(50))
+    instagram = Column(String(50))
     fecha_hora_registro_sistema = Column(
         DateTime, nullable=True, server_default=func.now()
     )

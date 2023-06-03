@@ -1,14 +1,14 @@
 from datetime import timedelta
-
-from dotenv import dotenv_values
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import dotenv_values
 from fastapi_another_jwt_auth import AuthJWT
 from fastapi_another_jwt_auth.exceptions import AuthJWTException
 
-from sisprot.db import db_session
+
 from sisprot.models import BaseModel
+from sisprot.db import db_session
 from sisprot.routes import (
     auth,
     partidas_contable,
@@ -82,4 +82,4 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
 
-BaseModel.metadata.create_all(bind=db_session().bind)
+# BaseModel.metadata.create_all(bind=db_session().bind)
