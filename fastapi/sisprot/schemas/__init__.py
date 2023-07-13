@@ -132,6 +132,8 @@ class ClienteInSchema(BaseModel):
     fecha_instalacion: date
     fecha_cancelacion: date = Field(None)
     estado_facturacion: str = None
+    fue_migrado: bool
+    wisphub_update: bool
     pais: str = None
     router: str = None
     id_plan: int
@@ -256,6 +258,7 @@ class FilterMessageSchema(BaseModel):
     estado_facturacion: Optional[List[str]] = (None,)
     precio_plan: Optional[List[float]] = (None,)
     tipo_cliente: Optional[List[int]] = (None,)
+    fue_migrado: Optional[List[bool]] = (None,)
 
 
 class MessageSchema(BaseModel):
@@ -372,6 +375,11 @@ class ProspectosResidencialesInSchema(BaseModel):
     sexo: str
     estado_vivienda: str
     parroquia: str
+    sms: str
+    whatsapp: str
+    twitter: str
+    facebook: str
+    instagram: str
     fecha_hora_registro_sistema: datetime
 
     @validator("sexo")
@@ -402,6 +410,11 @@ class ProspectosPymesInSchema(BaseModel):
     sexo: str
     estado_vivienda: str
     parroquia: str
+    sms: str
+    whatsapp: str
+    twitter: str
+    facebook: str
+    instagram: str
     fecha_hora_registro_sistema: datetime
 
     @validator("sexo")
@@ -510,29 +523,94 @@ class RolOutSchema(BaseModel):
         orm_mode = True
 
 
+class PaisesInSchema(BaseModel):
+    id: int
+    name: str
+
+
 class EstadosInSchema(BaseModel):
     id: int
-    desc_estado: str
-    estado: str
+    name: str
+    pais_id: str
 
 
 class MunicipiosInSchema(BaseModel):
     id: int
-    cod_municipio: int
-    desc_municipio: str
-    id_estado: str
+    name: str
+    estados_id: int
 
 
 class ParroquiasInSchema(BaseModel):
     id: int
-    cod_parroquia: int
-    desc_parroquia: str
-    siglas: str
-    id_estado: int
-    id_municipio: int
+    name: str
+    municipios_id: int
 
 
 class ComunidadesInSchema(BaseModel):
     id: int
-    desc_cominidad: str
-    id_parroquia: int
+    name: str
+    parroquias_id: int
+
+
+"""
+Schemas creados para raw wisphub
+"""
+
+
+class ClienteWisphubInSchema(BaseModel):
+    id_servicio: int
+    usuario: str
+    nombre: str
+    email: str
+    cedula: str
+    direccion: str
+    localidad: str
+    ciudad: str
+    telefono: str
+    descuento: str
+    saldo: str
+    rfc: str
+    informacion_adicional: str
+    notificacion_sms: bool
+    aviso_pantalla: bool
+    notificaciones_push: bool
+    auto_activar_servicio: bool
+    firewall: bool
+    servicio: str
+    password_servicio: str
+    server_hotspot: str
+    ip: str
+    ip_local: str
+    estado: str
+    modelo_antena: str
+    password_cpe: str
+    mac_cpe: str
+    interfaz_lan: str
+    modelo_router_wifi: str
+    ip_router_wifi: str
+    mac_router_wifi: str
+    usuario_router_wifi: str
+    password_router_wifi: str
+    ssid_router_wifi: str
+    password_ssid_router_wifi: str
+    comentarios: str
+    coordenadas: str
+    costo_instalacion: str
+    precio_plan: str
+    forma_contratacion: str
+    sn_onu: str
+    estado_facturas: str
+    fecha_instalacion: str
+    fecha_cancelacion: str
+    fecha_corte: str
+    ultimo_cambio: str
+    sectorial: str
+    plan_internet_id: int
+    plan_internet_nombre: str
+    zona_id: int
+    zona_nombre: str
+    router_id: int
+    router_nombre: str
+    tecnico_id: str
+    tecnico_nombre: str
+    tecnico: str

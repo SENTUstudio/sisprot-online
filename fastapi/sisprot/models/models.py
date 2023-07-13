@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
+    Boolean,
     DateTime,
     Column,
     Integer,
@@ -84,6 +85,8 @@ class Cliente(BaseModel):
     router = Column(String(100))
     estado_facturacion = Column(String(200))
     clave_6d = Column(String(300))
+    fue_migrado = Column(Boolean, default=False, nullable=True)
+    wisphub_update = Column(Boolean, default=False, nullable=True)
     country = relationship("Pais", primaryjoin="foreign(Cliente.pais) == Pais.nombre")
 
     id_plan = Column(Integer, ForeignKey("planes.id"))
@@ -372,11 +375,22 @@ class CarteraCliente(BaseModel):
     estado = Column(String(100))
 
 
+class Paises(BaseModel):
+    __tablename__ = "pais"
+    id = Column(Integer, primary_key=True)
+    name = Column(Text)
+
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+
 class Estados(BaseModel):
     __tablename__ = "estados"
     id = Column(Integer, primary_key=True)
-    desc_estado = Column(Text)
-    estado = Column(Text)
+    name = Column(Text)
+    pais_id = Column(Integer, ForeignKey("pais.id"))
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
@@ -387,23 +401,84 @@ class Estados(BaseModel):
 class Municipios(BaseModel):
     __tablename__ = "municipios"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    cod_municipio = Column(Integer)  # usuario
-    desc_municipio = Column(Text)  # nombre
-    id_estado = Column(Integer, ForeignKey("estados.id"))
+    name = Column(Text)  # nombre
+    estados_id = Column(Integer, ForeignKey("estados.id"))
 
 
 class Parroquias(BaseModel):
     __tablename__ = "parroquias"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    cod_parroquia = Column(Integer)  # usuario
-    desc_parroquia = Column(Text)  # nombre
-    siglas = Column(Text)  # nombre
-    id_estado = Column(Integer, ForeignKey("estados.id"))
-    id_municipio = Column(Integer, ForeignKey("municipios.id"))
+    name = Column(Text)
+    municipios_id = Column(Integer, ForeignKey("municipios.id"))
 
 
 class Comunidades(BaseModel):
     __tablename__ = "comunidades"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    desc_cominidad = Column(Text)  # nombre
-    id_parroquia = Column(Integer, ForeignKey("parroquias.id"))
+    name = Column(Text)  # nombre
+    parroquias_id = Column(Integer, ForeignKey("parroquias.id"))
+
+
+"""
+Modelos de base de datos raw para wishphub
+"""
+
+
+class ClienteWisphub(BaseModel):
+    __tablename__ = "clientes_wisphub"
+    id_servicio = Column(Integer, primary_key=True)
+    usuario = Column(Text)
+    nombre = Column(Text)
+    email = Column(Text)
+    cedula = Column(Text)
+    direccion = Column(Text)
+    localidad = Column(Text)
+    ciudad = Column(Text)
+    telefono = Column(Text)
+    descuento = Column(Text)
+    saldo = Column(Text)
+    rfc = Column(Text)
+    informacion_adicional = Column(Text)
+    notificacion_sms = Column(Boolean, default=False, nullable=True)
+    aviso_pantalla = Column(Boolean, default=False, nullable=True)
+    notificaciones_push = Column(Boolean, default=False, nullable=True)
+    auto_activar_servicio = Column(Boolean, default=False, nullable=True)
+    firewall = Column(Boolean, default=False, nullable=True)
+    servicio = Column(Text)
+    password_servicio = Column(Text)
+    server_hotspot = Column(Text)
+    ip = Column(Text)
+    ip_local = Column(Text)
+    estado = Column(Text)
+    modelo_antena = Column(Text)
+    password_cpe = Column(Text)
+    mac_cpe = Column(Text)
+    interfaz_lan = Column(Text)
+    modelo_router_wifi = Column(Text)
+    ip_router_wifi = Column(Text)
+    mac_router_wifi = Column(Text)
+    usuario_router_wifi = Column(Text)
+    password_router_wifi = Column(Text)
+    ssid_router_wifi = Column(Text)
+    password_ssid_router_wifi = Column(Text)
+    comentarios = Column(Text)
+    coordenadas = Column(Text)
+    costo_instalacion = Column(Text)
+    precio_plan = Column(Text)
+    forma_contratacion = Column(Text)
+    sn_onu = Column(Text)
+    estado_facturas = Column(Text)
+    fecha_instalacion = Column(Text)
+    fecha_cancelacion = Column(Text)
+    fecha_corte = Column(Text)
+    ultimo_cambio = Column(Text)
+    sectorial = Column(Text)
+    plan_internet_id = Column(Integer, unique=False)
+    plan_internet_nombre = Column(Text)
+    zona_id = Column(Integer, unique=False)
+    zona_nombre = Column(Text)
+    router_id = Column(Integer, unique=False)
+    router_nombre = Column(Text)
+    tecnico_id = Column(Float)
+    tecnico_nombre = Column(Text)
+    tecnico = Column(Float)

@@ -15,6 +15,7 @@ from sisprot.routes import (
     potes,
     metodos_pago,
     clientes,
+    clientes_wisphub,
     tasa_cambiaria,
     planes,
     tasa_digital,
@@ -30,7 +31,7 @@ from sisprot.routes import (
     reporte_fallas,
     users,
     carteras,
-    entidades
+    entidades,
 )
 
 app = FastAPI()
@@ -48,6 +49,7 @@ app.include_router(auth.router)
 app.include_router(potes.router)
 app.include_router(metodos_pago.router)
 app.include_router(clientes.router)
+app.include_router(clientes_wisphub.router)
 app.include_router(tasa_cambiaria.router)
 app.include_router(planes.router)
 app.include_router(tasa_digital.router)

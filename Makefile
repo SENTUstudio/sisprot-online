@@ -41,4 +41,16 @@ inicio: logo
 	mkdir -p pgadmin
 	sudo chown -R 5050:5050 pgadmin
 
+## Sincroniza la pc del trabajo con la casa
+rsync-casa: logo
+	sudo rsync -azP --exclude-from='rsync_exclude.txt' el@192.168.100.11:/home/el/Documentos/proyectos/sisprot-online/ .
+
+## Sincroniza la pc de la casa con el trabajo
+rsync-trabajo: logo
+	sudo rsync -azP --exclude-from='rsync_exclude.txt' .  el@192.168.100.11:/home/el/Documentos/proyectos/sisprot-online/
+
+## Entrar en el contenedor del backend de FastAPI
+backend: logo
+	docker-compose exec fastapi bash
+
 ## TODO: Falta agregar rutina de restauración del backup de la base de datos

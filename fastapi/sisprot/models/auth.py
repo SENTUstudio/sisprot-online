@@ -45,7 +45,7 @@ class UserAuth(BaseModel):
     rol = Column(Text)
     last_login = Column(DateTime)
     rol_id = Column(Integer)
-    id_cartera = Column(Integer, ForeignKey("cartera_clientes.id"), nullable=True)
+    id_cartera = Column(Integer, ForeignKey("cartera_clientes.id"))
 
     def check_password(self, password):
         return check_password(password, self.password_hash)

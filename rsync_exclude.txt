@@ -1,0 +1,11 @@
+fastapi/venv
+postgresql/data
+fastapi/__pycache__
+fastapi/sisprot/__pycache__
+fastapi/sisprot/models/__pycache__
+fastapi/sisprot/routes/__pycache__
+fastapi/sisprot/schemas/__pycache__
+fastapi/sisprot/tasks/__pycache__
+pgadmin
+airflow
+.git
