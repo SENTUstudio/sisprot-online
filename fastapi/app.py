@@ -81,7 +81,10 @@ def get_config():
 # in production, you can tweak performance using orjson response
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message},
+    )
 
 
 # BaseModel.metadata.create_all(bind=db_session().bind)

@@ -1,0 +1,131 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    ports:
+      - 54320:5432
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+    restart: "always"
+
+  # Database explorer
+  pgadmin:
+    container_name: "pgadmin"
+    image: dpage/pgadmin4
+    env_file:
+      - ./config/pgadmin.env
+    ports:
+      - 15432:80
+    volumes:
+      - ./pgadmin/pgadmin:/var/lib/pgadmin
+      - ./pgadmin/docker_pgadmin_servers.json:/pgadmin4/servers.json
+
+    restart: "always"
+
+    depends_on:
+      - postgres
+
+  minio:
+    image: minio/minio
+    container_name: weave-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000'
+      - '9002:9001'
+    volumes:
+      - data:/data
+    environment:
+      - "MINIO_ROOT_USER=admin"
+      - "MINIO_ROOT_PASSWORD=password"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  #      restart: "always"
+
+  mc-service:
+    image: minio/mc
+    depends_on:
+      - minio
+    restart: on-failure
+    entrypoint: >
+      /bin/sh -c " sleep 10; /usr/bin/mc alias set minio http://minio:9000 admin password; /usr/bin/mc mb minio/bucket; /usr/bin/mc cp -r /data minio/bucket/; /usr/bin/mc ls minio/bucket; echo 'MinIO bucket contents:'; /usr/bin/mc ls minio/bucket; "
+    volumes:
+      - ./data:/data
+
+  neo4j:
+    image: neo4j:latest
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/data
+
+  airflow:
+    build: ./airflow
+    depends_on:
+      - postgres
+      - minio
+      - neo4j
+      - fastapi
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - _AIRFLOW_WWW_USER_CREATE=True
+      - _AIRFLOW_WWW_USER_USERNAME=airflow
+      - _AIRFLOW_WWW_USER_PASSWORD=airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - airflow-dags:/opt/airflow/dagsairflow-dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+    restart: "always"
+
+  fastapi:
+    build: ./fastapi
+    environment:
+      - APP_MODULE=app:app
+    depends_on:
+      - neo4j
+    ports:
+      - "8000:80"
+    command: bash -c "sleep 30 && uvicorn app:app --host=0.0.0.0 --port=80"
+    volumes:
+      - ./fastapi:/app
+    restart: "always"
+
+volumes:
+  postgres-data:
+  pgadmin_volume:
+  neo4j-data:
+  airflow-dags:
+  data:
+
+
+networks:
+  network:
+    driver: bridge

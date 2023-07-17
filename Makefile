@@ -21,7 +21,7 @@ help: logo
 
 ## Detiene, Construye y reinicia servicio de docker-compose
 ds: logo
-	docker-compose down && docker-compose build && docker-compose up -d
+	docker compose -f local.yml down && docker compose -f local.yml build && docker compose -f local.yml up -d
 
 ## Muestra estado de contenedores orquestado con docker-compose
 dc-ps: logo

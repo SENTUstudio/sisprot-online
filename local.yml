@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    ports:
+      - 54320:5432
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+    restart: "always"
+
+  # Database explorer
+  pgadmin:
+    container_name: "pgadmin"
+    image: dpage/pgadmin4
+    env_file:
+      - ./config/pgadmin.env
+    ports:
+      - 15432:80
+    volumes:
+      - ./pgadmin/pgadmin:/var/lib/pgadmin
+      - ./pgadmin/docker_pgadmin_servers.json:/pgadmin4/servers.json
+
+    restart: "always"
+
+    depends_on:
+      - postgres
+
+  airflow:
+    build: ./airflow
+    depends_on:
+      - postgres
+      - fastapi
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - _AIRFLOW_WWW_USER_CREATE=True
+      - _AIRFLOW_WWW_USER_USERNAME=airflow
+      - _AIRFLOW_WWW_USER_PASSWORD=airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - airflow-dags:/opt/airflow/dagsairflow-dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+    restart: "always"
+
+  fastapi:
+    build: ./fastapi
+    environment:
+      - APP_MODULE=app:app
+    depends_on:
+      - postgres
+    ports:
+      - "8000:80"
+    command: bash -c "sleep 30 && uvicorn app:app --host=0.0.0.0 --port=80"
+    volumes:
+      - ./fastapi:/app
+    restart: "always"
+
+volumes:
+  postgres-data:
+  pgadmin_volume:
+  airflow-dags:
+  data:
+
+
+networks:
+  network:
+    driver: bridge
