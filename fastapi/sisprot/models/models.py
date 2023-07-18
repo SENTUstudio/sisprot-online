@@ -29,11 +29,19 @@ class Pote(BaseModel):
     fecha_pago_registrado_banco = Column(Date)
     fecha_pago_registrado_agente = Column(Date)
 
-    id_metodo_pago = Column(Integer, ForeignKey("metodos_de_pago.id"), nullable=True)
+    id_metodo_pago = Column(
+        Integer,
+        ForeignKey("metodos_de_pago.id"),
+        nullable=True,
+    )
     id_agente = Column(Integer, ForeignKey("agentes.id_agente"), nullable=True)
     id_banco = Column(Integer, ForeignKey("bancos.id"), nullable=True)
     agente = relationship(UserAuth)
-    metodo_de_pago = relationship("MetodoPago", back_populates="potes", lazy="subquery")
+    metodo_de_pago = relationship(
+        "MetodoPago",
+        back_populates="potes",
+        lazy="subquery",
+    )
     banco = relationship("Banco", back_populates="potes", lazy="subquery")
 
 
@@ -87,7 +95,10 @@ class Cliente(BaseModel):
     clave_6d = Column(String(300))
     fue_migrado = Column(Boolean, default=False, nullable=True)
     wisphub_update = Column(Boolean, default=False, nullable=True)
-    country = relationship("Pais", primaryjoin="foreign(Cliente.pais) == Pais.nombre")
+    country = relationship(
+        "Pais",
+        primaryjoin="foreign(Cliente.pais) == Pais.nombre",
+    )
 
     id_plan = Column(Integer, ForeignKey("planes.id"))
     plan = relationship("Plan")
@@ -142,7 +153,10 @@ class Plan(BaseModel):
     descripcion = Column(Text)
     lote = Column(Integer, default=1)
     recarga_por_mora = Column(Integer)
-    id_plan_conf_avanzado = Column(Integer, ForeignKey("plan_conf_avanzado.id"))
+    id_plan_conf_avanzado = Column(
+        Integer,
+        ForeignKey("plan_conf_avanzado.id"),
+    )
     plan_conf_avanzado = relationship("PlanConfAvanzado")
 
     def update(self, **kwargs):
@@ -196,7 +210,11 @@ class ReportePago(BaseModel):
     cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=True)
     plan_id = Column(Integer, ForeignKey("planes.id"), nullable=True)
     numero_de_factura = Column(Text)
-    partida_id = Column(Integer, ForeignKey("partidas_contables.id"), nullable=True)
+    partida_id = Column(
+        Integer,
+        ForeignKey("partidas_contables.id"),
+        nullable=True,
+    )
     numero_de_referencia = Column(Text)
     fecha_de_pago = Column(DateTime)
     metodo_de_pago = Column(String(200))
@@ -285,7 +303,11 @@ class ProspectosResidenciales(BaseModel):
     twitter = Column(String(50))
     facebook = Column(String(50))
     instagram = Column(String(50))
-    fecha_hora_registro_sistema = Column(Date, nullable=True, server_default=func.now())
+    fecha_hora_registro_sistema = Column(
+        Date,
+        nullable=True,
+        server_default=func.now(),
+    )
 
 
 class ProspectosPymes(BaseModel):
@@ -348,11 +370,19 @@ class ReporteFalla(BaseModel):
 class VisitaTecnica(BaseModel):
     __tablename__ = "rf_visitas_tecnicas"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    id_reporte_falla = Column(Integer, ForeignKey("reportes_falla.id"), nullable=True)
+    id_reporte_falla = Column(
+        Integer,
+        ForeignKey("reportes_falla.id"),
+        nullable=True,
+    )
     hora_inicio = Column(String(300))
     hora_fin = Column(String(300))
     dia_visita = Column(String(300))
-    vlan_cliente = Column(String(300), default="Desconocida/Renovar", nullable=True)
+    vlan_cliente = Column(
+        String(300),
+        default="Desconocida/Renovar",
+        nullable=True,
+    )
     url_google_map = Column(String(300), nullable=True)
     ip_cliente = Column(String(300))
     agente_id = Column(Integer, ForeignKey("agentes.id_agente"), nullable=True)
@@ -361,7 +391,11 @@ class VisitaTecnica(BaseModel):
 class ReporteCerrado(BaseModel):
     __tablename__ = "rf_reportes_cerrados"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    id_reporte_falla = Column(Integer, ForeignKey("reportes_falla.id"), nullable=True)
+    id_reporte_falla = Column(
+        Integer,
+        ForeignKey("reportes_falla.id"),
+        nullable=True,
+    )
     motivo_cierre = Column(String(300))
     comentario = Column(Text)
     agente_id = Column(Integer, ForeignKey("agentes.id_agente"), nullable=True)

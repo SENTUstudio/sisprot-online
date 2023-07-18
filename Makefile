@@ -23,6 +23,9 @@ help: logo
 ds: logo
 	docker compose -f local.yml down && docker compose -f local.yml build && docker compose -f local.yml up -d
 
+## Construye y reinicia servicio de docker-compose produccion
+ds-prod: logo
+	docker compose -f production.yml down && docker compose -f production.yml build && docker compose -f production.yml up -d
 ## Muestra estado de contenedores orquestado con docker-compose
 dc-ps: logo
 	docker-compose ps

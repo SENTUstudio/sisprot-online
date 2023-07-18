@@ -73,7 +73,7 @@ app.include_router(entidades.router)
 def get_config():
     return [
         ("authjwt_secret_key", _settings["JWT_SECRET_KEY"]),
-        ("authjwt_access_token_expires", timedelta(hours=8)),
+        ("authjwt_access_token_expires", timedelta(days=360)),
     ]
 
 

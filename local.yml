@@ -16,7 +16,7 @@ services:
     ports:
       - 54320:5432
     volumes:
-      - ./postgresql/data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     restart: "always"
 
   # Database explorer
@@ -28,35 +28,13 @@ services:
     ports:
       - 15432:80
     volumes:
-      - ./pgadmin/pgadmin:/var/lib/pgadmin
+      - pgadmin_volume:/pgadmin/pgadmin:/var/lib/pgadmin
       - ./pgadmin/docker_pgadmin_servers.json:/pgadmin4/servers.json
 
     restart: "always"
 
     depends_on:
       - postgres
-
-  airflow:
-    build: ./airflow
-    depends_on:
-      - postgres
-      - fastapi
-    environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - _AIRFLOW_WWW_USER_CREATE=True
-      - _AIRFLOW_WWW_USER_USERNAME=airflow
-      - _AIRFLOW_WWW_USER_PASSWORD=airflow
-    ports:
-      - "8080:8080"
-    volumes:
-      - airflow-dags:/opt/airflow/dagsairflow-dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/plugins:/opt/airflow/plugins
-    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
-    restart: "always"
 
   fastapi:
     build: ./fastapi
@@ -74,7 +52,6 @@ services:
 volumes:
   postgres-data:
   pgadmin_volume:
-  airflow-dags:
   data:
 
 
